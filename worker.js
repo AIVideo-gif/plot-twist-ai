@@ -1,9 +1,26 @@
 export default {
   async fetch(request, env) {
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type"
+    };
+
+    // Handle browser CORS preflight requests
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders
+      });
+    }
+
     const url = new URL(request.url);
 
-    // Handle AI requests from the website
-    if (url.pathname === "/api/generate" && request.method === "POST") {
+    // AI generation endpoint
+    if (
+      url.pathname === "/api/generate" &&
+      request.method === "POST"
+    ) {
       try {
         const body = await request.json();
         const prompt = body.prompt;
@@ -11,7 +28,10 @@ export default {
         if (!prompt) {
           return Response.json(
             { error: "Prompt is required" },
-            { status: 400 }
+            {
+              status: 400,
+              headers: corsHeaders
+            }
           );
         }
 
@@ -22,7 +42,7 @@ export default {
               {
                 role: "system",
                 content:
-                  "You are Plot Twist AI, an AI assistant that creates entertaining fictional drama stories, plot twists, scripts, titles, and social media content."
+                  "You are Plot Twist AI. Create entertaining original fictional drama stories, viral hooks, scripts, scenes, titles, thumbnails, and social media content. When the user requests JSON, return only valid JSON with no markdown code fences."
               },
               {
                 role: "user",
@@ -32,17 +52,32 @@ export default {
           }
         );
 
-        return Response.json(response);
+        return Response.json(response, {
+          headers: corsHeaders
+        });
+
       } catch (error) {
         return Response.json(
-          { error: error.message },
-          { status: 500 }
+          {
+            error: error.message || "AI generation failed"
+          },
+          {
+            status: 500,
+            headers: corsHeaders
+          }
         );
       }
     }
 
-    return new Response("Plot Twist AI API is running.", {
-      headers: { "content-type": "text/plain" }
-    });
+    // Basic Worker test page
+    return new Response(
+      "Plot Twist AI API is running.",
+      {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/plain"
+        }
+      }
+    );
   }
 };
