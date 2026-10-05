@@ -70,6 +70,52 @@ export default {
       }
     }
 
+        // AI image generation endpoint
+    if (
+      url.pathname === "/api/image" &&
+      request.method === "POST"
+    ) {
+      try {
+        const body = await request.json();
+        const prompt = body.prompt;
+
+        if (!prompt) {
+          return Response.json(
+            { error: "Image prompt is required" },
+            {
+              status: 400,
+              headers: corsHeaders
+            }
+          );
+        }
+
+        const image = await env.AI.run(
+          "@cf/black-forest-labs/flux-1-schnell",
+          {
+            prompt: prompt
+          }
+        );
+
+        return new Response(image, {
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "image/jpeg"
+          }
+        });
+
+      } catch (error) {
+        return Response.json(
+          {
+            error: error.message || "Image generation failed"
+          },
+          {
+            status: 500,
+            headers: corsHeaders
+          }
+        );
+      }
+    }
+    
     // Basic Worker test page
     return new Response(
       "Plot Twist AI API is running.",
