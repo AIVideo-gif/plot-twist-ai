@@ -40,6 +40,7 @@ export default {
   {
     max_tokens: 4096,
     messages: [
+      {
                 role: "system",
                 content:
                   "You are Plot Twist AI. Create entertaining original fictional drama stories, viral hooks, scripts, scenes, titles, thumbnails, and social media content. When the user requests JSON, return only valid JSON with no markdown code fences."
