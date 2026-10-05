@@ -36,9 +36,43 @@ function render(s) {
     })
     .join("");
 
+  // CHARACTER ENGINE
+  const characters = Array.isArray(s.characters)
+    ? s.characters
+    : [];
+
+  const characterSection =
+    document.getElementById("characters");
+
+  if (characterSection) {
+    characterSection.innerHTML = characters
+      .map(character => `
+        <div class="scene">
+          <strong>${character.name || "CHARACTER"}</strong>
+          <div class="muted">
+            <b>Role:</b> ${character.role || ""}
+            <br><br>
+            <b>Age:</b> ${character.age || ""}
+            <br><br>
+            <b>Appearance:</b> ${character.appearance || ""}
+            <br><br>
+            <b>Clothing:</b> ${character.clothing || ""}
+            <br><br>
+            <b>Personality:</b> ${character.personality || ""}
+            <br><br>
+            <b>Voice:</b> ${character.voice || ""}
+            <br><br>
+            <b>Visual Prompt:</b> ${character.visualPrompt || ""}
+          </div>
+        </div>
+      `)
+      .join("");
+  }
+
   $("approved").classList.add("hidden");
   $("progressBar").style.width = "100%";
-  $("progressText").textContent = "AI story package generated.";
+  $("progressText").textContent =
+    "AI story and character package generated.";
 
   window.scrollTo({
     top: $("production").offsetTop - 10,
@@ -81,6 +115,20 @@ Use exactly this structure:
   "genre": "Genre/style",
   "hook": "Powerful opening hook",
   "voiceover": "Complete dramatic voiceover script",
+
+  "characters": [
+    {
+      "name": "Character name",
+      "role": "Role in the story",
+      "age": "Approximate age",
+      "appearance": "Detailed permanent physical appearance",
+      "clothing": "Signature clothing and style",
+      "personality": "Personality and emotional traits",
+      "voice": "Voice characteristics",
+      "visualPrompt": "Detailed reusable visual prompt for keeping this character visually consistent across every scene"
+    }
+  ],
+
   "scenes": [
     ["01", "Scene title", "Visual description"],
     ["02", "Scene title", "Visual description"],
@@ -91,10 +139,37 @@ Use exactly this structure:
     ["07", "Scene title", "Visual description"],
     ["08", "Scene title", "Visual description"]
   ],
+
   "thumbnail": "Detailed thumbnail image prompt",
   "ytTitle": "Clickable YouTube title",
   "description": "YouTube/social media description"
 }
+
+CHARACTER RULES:
+
+Create a character profile for every important recurring character.
+
+Give each character a specific and consistent physical appearance.
+
+Include details such as:
+age,
+hair,
+facial features,
+body type,
+clothing,
+and distinctive features.
+
+The visualPrompt must be detailed enough to reuse later for AI image and video generation.
+
+Do not change a character's physical appearance between scenes unless the story specifically requires it.
+
+SCENE RULES:
+
+When a character appears in a scene, use the character's name in the visual description.
+
+Make each scene visually cinematic and suitable for future AI image or video generation.
+
+STORY RULES:
 
 Make the opening immediately attention-grabbing.
 Build suspense throughout the story.
