@@ -96,12 +96,18 @@ export default {
           }
         );
 
-        return new Response(image, {
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "image/jpeg"
-          }
-        });
+        const binaryString = atob(image.image);
+const imageBytes = Uint8Array.from(
+  binaryString,
+  char => char.charCodeAt(0)
+);
+
+return new Response(imageBytes, {
+  headers: {
+    ...corsHeaders,
+    "Content-Type": "image/jpeg"
+  }
+});
 
       } catch (error) {
         return Response.json(
