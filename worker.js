@@ -1,136 +1,156 @@
 export default {
   async fetch(request, env) {
+    const allowedOrigin = "https://aivideo-gif.github.io";
+
     const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type"
+      "Access-Control-Allow-Origin": allowedOrigin,
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
     };
 
-    // Handle browser CORS preflight requests
+    // Handle browser CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
-        headers: corsHeaders
+        headers: corsHeaders,
       });
     }
 
-    const url = new URL(request.url);
-
-    // AI generation endpoint
-    if (
-      url.pathname === "/api/generate" &&
-      request.method === "POST"
-    ) {
-      try {
-        const body = await request.json();
-        const prompt = body.prompt;
-
-        if (!prompt) {
-          return Response.json(
-            { error: "Prompt is required" },
-            {
-              status: 400,
-              headers: corsHeaders
-            }
-          );
+    if (request.method !== "POST") {
+      return new Response(
+        JSON.stringify({ error: "Method not allowed" }),
+        {
+          status: 405,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
         }
+      );
+    }
 
-        const response = await env.AI.run(
-  "@cf/meta/llama-3.1-8b-instruct-fast",
-  {
-    max_tokens: 4096,
-    messages: [
-      {
-                role: "system",
-                content:
-                  "You are Plot Twist AI. Create entertaining original fictional drama stories, viral hooks, scripts, scenes, titles, thumbnails, and social media content. When the user requests JSON, return only valid JSON with no markdown code fences."
+    try {
+      const body = await request.json();
+
+      const command = body.command || "";
+      const length = body.length || "medium";
+      const style = body.style || "cinematic";
+
+      if (!command.trim()) {
+        return new Response(
+          JSON.stringify({ error: "No story command provided." }),
+          {
+            status: 400,
+            headers: {
+              ...corsHeaders,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      }
+
+      const prompt = `
+You are the AI story engine for Plot Twist AI.
+
+Create an original dramatic story package based on the user's command.
+
+USER COMMAND:
+${command}
+
+STORY LENGTH:
+${length}
+
+STYLE:
+${style}
+
+Return ONLY valid JSON using this exact structure:
+
+{
+  "title": "Story title",
+  "hook": "A powerful opening hook",
+  "story": "The complete story",
+  "characters": [
+    {
+      "name": "Character name",
+      "role": "Character role",
+      "appearance": "Detailed physical appearance",
+      "clothing": "Detailed clothing",
+      "personality": "Personality description",
+      "voice": "Voice description",
+      "visualPrompt": "Detailed AI image generation prompt for this character"
+    }
+  ]
+}
+
+Do not use markdown.
+Do not wrap the JSON in code fences.
+`;
+
+      const aiResponse = await env.AI.run(
+        "@cf/meta/llama-3.1-8b-instruct",
+        {
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a professional cinematic story writer. Always return valid JSON only.",
+            },
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+        }
+      );
+
+      let output = aiResponse.response || aiResponse;
+
+      if (typeof output === "string") {
+        output = output
+          .replace(/^```json\s*/i, "")
+          .replace(/^```\s*/i, "")
+          .replace(/\s*```$/i, "");
+
+        try {
+          output = JSON.parse(output);
+        } catch {
+          return new Response(
+            JSON.stringify({
+              error: "AI returned invalid JSON.",
+              raw: output,
+            }),
+            {
+              status: 500,
+              headers: {
+                ...corsHeaders,
+                "Content-Type": "application/json",
               },
-              {
-                role: "user",
-                content: prompt
-              }
-            ]
-          }
-        );
-
-        return Response.json(response, {
-          headers: corsHeaders
-        });
-
-      } catch (error) {
-        return Response.json(
-          {
-            error: error.message || "AI generation failed"
-          },
-          {
-            status: 500,
-            headers: corsHeaders
-          }
-        );
-      }
-    }
-
-        // AI image generation endpoint
-    if (
-      url.pathname === "/api/image" &&
-      request.method === "POST"
-    ) {
-      try {
-        const body = await request.json();
-        const prompt = body.prompt;
-
-        if (!prompt) {
-          return Response.json(
-            { error: "Image prompt is required" },
-            {
-              status: 400,
-              headers: corsHeaders
             }
           );
         }
-
-        const image = await env.AI.run(
-          "@cf/black-forest-labs/flux-1-schnell",
-          {
-            prompt: prompt
-          }
-        );
-
-        const binaryString = atob(image.image);
-const imageBytes = Uint8Array.from(
-  binaryString,
-  char => char.charCodeAt(0)
-);
-
-return new Response(imageBytes, {
-  headers: {
-    ...corsHeaders,
-    "Content-Type": "image/jpeg"
-  }
-});
-
-      } catch (error) {
-        return Response.json(
-          {
-            error: error.message || "Image generation failed"
-          },
-          {
-            status: 500,
-            headers: corsHeaders
-          }
-        );
       }
-    }
-    
-    // Basic Worker test page
-    return new Response(
-      "Plot Twist AI API is running.",
-      {
+
+      return new Response(JSON.stringify(output), {
+        status: 200,
         headers: {
           ...corsHeaders,
-          "Content-Type": "text/plain"
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      return new Response(
+        JSON.stringify({
+          error: "AI request failed.",
+          details: error.message,
+        }),
+        {
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
         }
-      }
-    );
-  }
+      );
+    }
+  },
 };
