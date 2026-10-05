@@ -2,5 +2,8 @@
   "name": "plot-twist-ai-api",
   "main": "worker.js",
   "compatibility_date": "2026-10-05",
-  "workers_dev": true
+  "workers_dev": true,
+  "ai": {
+    "binding": "AI"
+  }
 }
