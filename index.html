@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08090d">
+<title>PLOT TWIST AI</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div>
+      <div class="brand">PLOT TWIST <span>AI</span></div>
+      <div class="tagline">YOU NEVER SEE IT COMING.</div>
+    </div>
+    <div class="status">● LOCAL</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">AI STORY STUDIO</div>
+      <h1>Tell me what happens.</h1>
+      <p>One command. Story, scenes, voiceover plan, thumbnail, title and publishing package.</p>
+      <textarea id="command" placeholder="Make a 60-second betrayal story about a husband who finds a second phone..."></textarea>
+      <div class="controls">
+        <select id="length">
+          <option value="60">60 seconds</option>
+          <option value="45">45 seconds</option>
+          <option value="90">90 seconds</option>
+        </select>
+        <select id="style">
+          <option>Cinematic drama</option>
+          <option>Mystery thriller</option>
+          <option>Emotional drama</option>
+          <option>Revenge story</option>
+        </select>
+      </div>
+      <button id="create" class="primary">🎬 CREATE STORY</button>
+    </section>
+
+    <section id="production" class="panel hidden">
+      <div class="panel-head">
+        <div>
+          <div class="eyebrow">PRODUCTION</div>
+          <h2 id="title">Story</h2>
+        </div>
+        <div id="stage" class="pill">DRAFT</div>
+      </div>
+
+      <div class="progress"><div id="progressBar"></div></div>
+      <div id="progressText" class="muted">Ready</div>
+
+      <div class="grid">
+        <article>
+          <label>HOOK</label>
+          <div id="hook" class="cardtext"></div>
+        </article>
+        <article>
+          <label>GENRE</label>
+          <div id="genre" class="cardtext"></div>
+        </article>
+      </div>
+
+      <article>
+        <label>VOICEOVER</label>
+        <div id="voiceover" class="cardtext"></div>
+      </article>
+
+      <article>
+        <label>SCENES</label>
+        <div id="scenes"></div>
+      </article>
+
+      <div class="grid">
+        <article>
+          <label>THUMBNAIL</label>
+          <div id="thumbnail" class="cardtext"></div>
+        </article>
+        <article>
+          <label>YOUTUBE TITLE</label>
+          <div id="ytTitle" class="cardtext"></div>
+        </article>
+      </div>
+
+      <article>
+        <label>DESCRIPTION</label>
+        <div id="description" class="cardtext"></div>
+      </article>
+
+      <div class="actions">
+        <button id="save" class="secondary">SAVE DRAFT</button>
+        <button id="approve" class="primary">✓ APPROVE</button>
+      </div>
+      <div id="approved" class="approved hidden">Approved. Ready for the publishing integration.</div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">PIPELINE</div>
+      <h2>One command → finished Short</h2>
+      <div class="pipeline">
+        <span>Story</span><b>→</b><span>Characters</span><b>→</b><span>Scenes</span><b>→</b>
+        <span>Voice</span><b>→</b><span>Video</span><b>→</b><span>QC</span><b>→</b><span>YouTube</span>
+      </div>
+      <p class="muted">This starter keeps the publishing step approval-gated. Provider integrations can be connected next.</p>
+    </section>
+  </main>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
