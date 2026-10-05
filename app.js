@@ -5,6 +5,9 @@ let current = null;
 const API_URL =
   "https://plot-twist-ai-api.david-hilbun-83.workers.dev/api/generate";
 
+const IMAGE_API_URL =
+  "https://plot-twist-ai-api.david-hilbun-83.workers.dev/api/image";
+
 function render(s) {
   current = s;
 
@@ -252,3 +255,36 @@ if (saved) {
     console.error(e);
   }
 }
+
+// TEMPORARY IMAGE ENGINE TEST
+window.testPlotTwistImage = async () => {
+  const response = await fetch(IMAGE_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      prompt:
+        "Cinematic dramatic movie still of a rugged 35-year-old man with short dark hair and blue eyes holding a winning lottery ticket, realistic lighting, highly detailed"
+    })
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    alert("Image test failed: " + errorText);
+    return;
+  }
+
+  const blob = await response.blob();
+  const imageUrl = URL.createObjectURL(blob);
+
+  const image = document.createElement("img");
+  image.src = imageUrl;
+  image.style.width = "100%";
+  image.style.borderRadius = "16px";
+  image.style.marginTop = "20px";
+
+  document.body.prepend(image);
+
+  alert("IMAGE ENGINE WORKS!");
+};
