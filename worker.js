@@ -36,10 +36,10 @@ export default {
         }
 
         const response = await env.AI.run(
-          "@cf/meta/llama-3.1-8b-instruct-fast",
-          {
-            messages: [
-              {
+  "@cf/meta/llama-3.1-8b-instruct-fast",
+  {
+    max_tokens: 4096,
+    messages: [
                 role: "system",
                 content:
                   "You are Plot Twist AI. Create entertaining original fictional drama stories, viral hooks, scripts, scenes, titles, thumbnails, and social media content. When the user requests JSON, return only valid JSON with no markdown code fences."
